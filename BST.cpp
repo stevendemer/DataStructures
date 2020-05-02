@@ -1,17 +1,5 @@
 #include "BST.h"
 
-
-/*In a binary search tree the left subtree's nodes have keys less than the root's 
-and the right subtree's nodes have keys greater than that of the root's.
-This is the internal implementation of the BST class which ultilizes
-the root node so i can use recursion (the root node is not accessible by the user).
-I named the data of node key in the function params to avoid confusion
-
-    Author : Steven Demertzis
-    Date : Sunday 26 April 2020
-    AEM : 3467
-*/
-
 Node* BST::insert(Node* root, std::string key){
     //base case the tree is empty so we create the root node and return it
     if (!root)
@@ -22,8 +10,13 @@ Node* BST::insert(Node* root, std::string key){
         root->left = insert(root->left, key);
     //else if the key is greater than the root's data then we insert it 
     //to the right subtree
-    else
+    else if (root->getData() < key)
         root->right = insert(root->right, key);
+    //in case of duplicates just increase the counter by 1 and exit
+    else{
+        root->counter++;
+        return root;
+    }
     //return the root node after insertion
     return root;
 }
@@ -111,7 +104,7 @@ Node* BST::deleteNode(Node* root, std::string key){
 }
 
 
-//Just implementing the public functions that the user is going
+//Implementing the public functions that the user is going
 //to interact with 
 
 //constructor
@@ -137,6 +130,10 @@ void BST::deleteNode(std::string key){
 
 bool BST::search(std::string key){
     bool t = search(root, key);
+    if (t)
+        std::cout<<"The key exists in the tree "<<std::endl;
+    else
+        std::cout<<"The key does not exist in the tree "<<std::endl;
     return t;
 }
 

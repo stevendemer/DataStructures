@@ -197,7 +197,7 @@ Node* AVL::deleteNode(Node* root, string key){
         temp = root;
         root = nullptr;
       }
-      //once child case
+      //one child case
       else{
         *root = *temp;
         delete temp;
