@@ -6,5 +6,4 @@
 ##### then just run it ./main
 
 
-
-####### Hashing will be added later on 
+##### Hashing will be added later on...
