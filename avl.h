@@ -3,6 +3,8 @@
 #include "Node.h"
 using namespace std;
 
+//SEARCHING INSERTION AND DELETION/DISPLAY ARE WORKING FINE 
+
 class AVL{
   Node* root;
 
@@ -22,13 +24,15 @@ class AVL{
 
   Node* findMax(Node* root);
 
-  Node* leftRotation(Node* root);
+  Node* singleLeftRotate(Node* &root);
 
-  Node* rightRotation(Node* root);
+  Node* singleRightRotate(Node* &root);
+
+  Node* leftRightRotate(Node* &root);
+
+  Node* rightLeftRotate(Node* &root);
   
   int getBalanceFactor(Node* root);
-
-  // int updateHeight(Node* root);
 
   int getHeight(Node* root);
 public:

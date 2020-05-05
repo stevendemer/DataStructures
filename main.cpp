@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 #include "BST.h"
-// #include "avl.h"
+#include "avl.h"
 using namespace std;
 using namespace std::chrono;
 
@@ -18,30 +18,47 @@ string removePunc(string& str){
     return result;
 }
 
+// int main(int argc, char** argv){
+//     AVL *avl = new AVL();
+//     BST *bst = new BST();
+//     auto start = high_resolution_clock::now();
+//     ifstream file("small-file.txt");
+//     string linestr;
+//     int counter = 20000;
+//     while (getline(file, linestr,' ') && counter--){
+//         string res = removePunc(linestr);
+//         avl->insert(res);
+//     }
+//     auto end = high_resolution_clock::now();
+//     auto duration = duration_cast<seconds>(end - start);
+//     avl->inorder();
+//     cout<<avl->search("well")<<endl;
+//     cout<<avl->search("how")<<endl;
+//     cout<<avl->search("steven")<<std::endl;
+//     avl->deleteNode("EBook");
+//     cout<<"After the deletion the tree is : "<<endl;
+//     avl->inorder();
+//     cout<<endl;
+//     cout<<"------ ------- ------ \n";
+//     avl->postorder();
+//     cout<<"It took "<<duration.count()<<" seconds to execute "<<endl;
+// }
+
+
+//for testing purposes
 int main(int argc, char** argv){
-    // AVL *avl = new AVL();
-    BST *bst = new BST();
-    auto start = high_resolution_clock::now();
-    ifstream file("small-file.txt");
-    string linestr;
-    int counter = 5;
-    while (getline(file, linestr,' ') && counter--){
-        string res = removePunc(linestr);
-        bst->insert(res);
-    }
-    auto end = high_resolution_clock::now();
-    auto duration = duration_cast<seconds>(end - start);
-    bst->inorder();
-    cout<<bst->search("well")<<endl;
-    cout<<bst->search("how")<<endl;
-    cout<<bst->search("steven")<<std::endl;
-    bst->deleteNode("EBook");
-    cout<<"After the deletion the tree is : "<<endl;
-    bst->inorder();
+    AVL* avl = new AVL();
+    avl->insert("steve");
+    avl->insert("bee");
+    avl->insert("demer");
+    avl->insert("zero");
+    avl->insert("animal");
+    avl->insert("eagle");
+    // avl->deleteNode("bee");
+    // avl->deleteNode("steve");
+    cout<<avl->search("demer")<<endl;
+    avl->inorder();
     cout<<endl;
-    cout<<"------ ------- ------ \n";
-    bst->postorder();
-    cout<<"It took "<<duration.count()<<" seconds to execute "<<endl;
+    avl->preorder();
+    return 0;
 }
-
-

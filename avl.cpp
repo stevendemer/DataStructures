@@ -1,6 +1,7 @@
 #include "avl.h"
 using namespace std;
 
+
 AVL::AVL(){
   root = nullptr;
 }
@@ -50,56 +51,58 @@ int AVL::getHeight(Node* root){
   return root->height;
 }
 
-// int AVL::updateHeight(Node* root){
-//   if (!root)
-//     return -1;
-//   root->height = max(root->left->height, root->right->height) + 1;
-//   return root->height;
-// }
-
-/* root
-  /    \
-  A      pivot
-        /
-        temp
-*/
-//O(1) Space complexity
-Node* AVL::leftRotation(Node* root){
-  Node* pivot = root->right;
-  Node* temp = pivot->left;
-  //perform rotation
-  pivot->left = root;
-  root->right = temp;
-  //update the heights
+//left left case
+//O(1) space and time complexity
+Node* AVL::singleRightRotate(Node* &root){
+  Node* pivot = root->left;
+  Node* x = pivot->right;
+  //the rotation part
+  root->left = x;
+  pivot->right = root;
+  //update the height 
   root->height = max(getHeight(root->left), getHeight(root->right)) + 1;
   pivot->height = max(getHeight(pivot->left), getHeight(pivot->right)) + 1;
-  //return the new root;
+  //return the new root node
   return pivot;
 }
 
-Node* AVL::rightRotation(Node* root){
-  Node* pivot = root->left;
-  Node* temp = pivot->right;
-  //perform rotation
-  pivot->right = root;
-  root->left = temp;
-  //update the heights
+//right right case
+//O(1) space and time complexity
+Node* AVL::singleLeftRotate(Node* &root){
+  Node* pivot = root->right;
+  Node* x = pivot->left;
+  //the rotation part 
+  root->right = x;
+  pivot->left = root;
+  //update the height 
   root->height = max(getHeight(root->left), getHeight(root->right)) + 1;
   pivot->height = max(getHeight(pivot->left), getHeight(pivot->right)) + 1;
-  //return the new root
+  //return the new root node
   return pivot;
+}
+
+//left right case
+Node* AVL::rightLeftRotate(Node* &root){
+  root->left = singleLeftRotate(root->left);
+  return singleRightRotate(root);
+}
+
+//right left case
+Node* AVL::leftRightRotate(Node* &root){
+  root->right = singleRightRotate(root->right);
+  return singleLeftRotate(root);
 }
 
 Node* AVL::findMin(Node* root){
   if (!root || !root->left)
     return root;
-  root->left = findMin(root->left);
+  return findMin(root->left);
 }
 
 Node* AVL::findMax(Node* root){
   if (!root || !root->right)
     return root;
-  root->right = findMax(root->right);
+  return findMax(root->right);
 }
 
 bool AVL::search(Node* root, string key){
@@ -109,9 +112,9 @@ bool AVL::search(Node* root, string key){
   if (root->getData() == key)
     return true;
   else if (root->getData() > key)
-    search(root->left, key);
+    return search(root->left, key);
   else
-    search(root->right, key);
+    return search(root->right, key);
   //the key is not found
   return false;
 }
@@ -121,21 +124,21 @@ void AVL::postorder(Node* root){
     return;
   postorder(root->left);
   postorder(root->right);
-  cout<<root->getData()<<endl;
+  cout<<"---> "<<root->getData()<<endl;
 }
 
 void AVL::inorder(Node* root){
   if (!root)
     return;
   inorder(root->left);
-  cout<<root->getData()<<endl;
+  cout<<"---> "<<root->getData()<<endl;
   inorder(root->right);
 }
 
 void AVL::preorder(Node* root){
   if (!root)
     return;
-  cout<<root->getData()<<endl;
+  cout<<"---> "<<root->getData()<<endl;
   preorder(root->left);
   preorder(root->right);
 }
@@ -148,34 +151,35 @@ Node* AVL::insert(Node* root, string key){
     root->left = insert(root->left, key);
   else if (root->getData() < key)
     root->right = insert(root->right, key);
+    //in case of duplicate values just 
+    //increase the counter by 1 and return the 
+    //root node
   else{
     root->counter++;
     return root;
  }  
+ if (!root)
+    return root;
   //update the height
-  root->height = max(getHeight(root->left), getHeight(root->right));  
+  root->height = max(getHeight(root->left), getHeight(root->right)) + 1;  
   //get the bf and check if the tree is balanced
   //There are 4 cases
   int balance_factor = getBalanceFactor(root);
   //LEFT LEFT Case 
   if (balance_factor > 1 && key < root->left->getData())    
-    return rightRotation(root);
+    return singleRightRotate(root);
   //Right Right Case
   if (balance_factor < -1 && key > root->right->getData())
-    return leftRotation(root);
+    return singleLeftRotate(root);  
   //Left Right Case
-  if (balance_factor > 1 && key > root->left->getData()){
-    root->left = leftRotation(root->left);
-    return rightRotation(root);
-  }
+  if (balance_factor > 1 && key > root->left->getData())
+      return rightLeftRotate(root);
   //Right Left Case
-  if (balance_factor < -1 && key < root->left->getData()){
-    root->right = rightRotation(root->right);
-    return leftRotation(root);
-  }
+  if (balance_factor < -1 && key < root->right->getData())
+      return leftRightRotate(root);
+  root->height = max(getHeight(root->left), getHeight(root->right)) + 1;
   return root;
 }
-
 
 Node* AVL::deleteNode(Node* root, string key){
   //base case the tree is empty
@@ -207,11 +211,15 @@ Node* AVL::deleteNode(Node* root, string key){
     //swap its values with the root node and then delete it
     else{
       Node* temp = findMin(root->right);
+      //copy its value 
       root->setData(temp->getData());
+      root->counter = temp->counter;
       //delete the inorder successor
       root->right = deleteNode(root->right, root->getData());
     }      
   }
+  if (!root)
+    return root;
   //update the height of the new tree
   root->height = max(getHeight(root->left), getHeight(root->right)) + 1;
   //check for the balance factor
@@ -219,19 +227,15 @@ Node* AVL::deleteNode(Node* root, string key){
   //in case the tree is unbalanced there are 4 cases
   //left left rotation
   if (bf > 1 && root->left->getData() > key)
-      return rightRotation(root);
+      return singleRightRotate(root);
     //right right rotataion
   if (bf < -1 && root->right->getData() < key)
-    return leftRotation(root);
+    return singleLeftRotate(root);
   //left right rotation
-  if (bf > 1 && root->left->getData() < key){
-    root->left = leftRotation(root->left);
-    return rightRotation(root);
-  }
+  if (bf > 1 && root->left->getData() < key)
+    return rightLeftRotate(root);
   //right and left rotation
-  if (bf < -1 && root->right->getData() > key){
-    root->right = rightRotation(root->right);
-    return leftRotation(root);
-  }
+  if (bf < -1 && root->right->getData() > key)
+    return leftRightRotate(root);
   return root;
 }
